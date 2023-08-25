@@ -1,0 +1,46 @@
+#remember indentation matters
+version: '4'
+
+services:
+  app:
+    image: oloringray007/planetarium:11
+    container_name: planetarium
+    ports:
+     - 8080:8080
+    volumes:
+      - ./logs/:/logs/
+
+  loki:
+    image: grafana/loki:latest # think of this as a database for your logs
+    container_name: logging-loki
+    ports:
+      - 3100:3100
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: logging-promtail
+    volumes:
+      - ./configs/promtail-config.yml:/etc/promtail/promtail-config.yml 
+      - ./logs/staticLogs.log:/var/log/staticLogs.log
+    command: "--config.file=/etc/promtail/promtail-config.yml"
+
+  grafana:
+    image: grafana/grafana:latest # default username/password:admin/admin
+    container_name: logging-grafana
+      # volumes:
+      #   - grafana-data:/var/lib/grafana
+      # persisting grafana settings
+    ports:
+      - 3000:3000
+    depends_on:
+      - loki # ensures loki is setup before Grafana tries to interface with it
+
+  prometheus:
+    image: prom/prometheus:latest # think of this as your database for your metrics over time
+    ports:
+      - 9090:9090
+    volumes:
+      - ./configs/prometheus-config.yml:/etc/prometheus/prometheus-config.yml
+      - ./configs/prometheus-rules.yml:/etc/prometheus/prometheus-rules.yml
+    container_name: logging-prometheus
+    command: "--config.file=/etc/prometheus/prometheus-config.yml"

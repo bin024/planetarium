@@ -1,0 +1,76 @@
+groups:
+- name: planetarium
+  rules:
+
+  - alert: AppDown
+    expr: up == 0
+    for: 5m
+    labels:
+      severity: warn
+    annotations:
+      summary: "App is down"
+      description: "Prometheus has detected the application is not running for over 5 minutes"
+
+  - alert: APIHighLatency:5min
+    expr: sum(rate(http_server_requests_seconds_sum{job="planetarium"}[5m])) / sum(rate(http_server_requests_seconds_count{job="planetarium"}[5m])) > 0.2
+    labels:
+      severity: warn
+    annotations:
+      summary: "5min latency too high"
+      description: "Planetarium application is taking too long to handle requests in a 5 minute range"
+
+  - alert: APIHighLatency:15min
+    expr: sum(rate(http_server_requests_seconds_sum{job="planetarium"}[15m])) / sum(rate(http_server_requests_seconds_count{job="planetarium"}[15m])) > 0.2
+    labels:
+      severity: warn
+    annotations:
+      summary: "15min latency too high"
+      description: "Planetarium application is taking too long to handle requests in a 15 minute range"
+
+  - alert: APIHighLatency:30min
+    expr: sum(rate(http_server_requests_seconds_sum{job="planetarium"}[30m])) / sum(rate(http_server_requests_seconds_count{job="planetarium"}[30m])) > 0.2
+    labels:
+      severity: warn
+    annotations:
+      summary: "30min latency too high"
+      description: "Planetarium application is taking too long to handle requests in a 30 minute range"
+
+  - alert: APIHighLatency:1hour
+    expr: sum(rate(http_server_requests_seconds_sum{job="planetarium"}[1h])) / sum(rate(http_server_requests_seconds_count{job="planetarium"}[1h])) > 0.2
+    labels:
+      severity: warn
+    annotations:
+      summary: "1hour latency too high"
+      description: "Planetarium application is taking too long to handle requests in an hour range"
+
+  - alert: APILowSuccessRate:5min
+    expr: sum(rate(http_server_requests_seconds_count{job="planetarium", status!="500"}[5m]))/sum(rate(http_server_requests_seconds_count{job="planetarium"}[5m])) < 0.998
+    labels:
+      severity: warn
+    annotations:
+      summary: "5min success rate too low"
+      description: "Planetarium application is experiencing too many status 500 codes in a 5 minute range"
+  
+  - alert: APILowSuccessRate:15min
+    expr: sum(rate(http_server_requests_seconds_count{job="planetarium", status!="500"}[15m]))/sum(rate(http_server_requests_seconds_count{job="planetarium"}[15m])) < 0.998
+    labels:
+      severity: warn
+    annotations:
+      summary: "15min success rate too low"
+      description: "Planetarium application is experiencing too many status 500 codes in a 15 minute range"
+    
+  - alert: APILowSuccessRate:30min
+    expr: sum(rate(http_server_requests_seconds_count{job="planetarium", status!="500"}[30m]))/sum(rate(http_server_requests_seconds_count{job="planetarium"}[30m])) < 0.998
+    labels:
+      severity: warn
+    annotations:
+      summary: "30min success rate too low"
+      description: "Planetarium application is experiencing too many status 500 codes in a 30 minute range"
+  
+  - alert: APILowSuccessRate:1hr
+    expr: sum(rate(http_server_requests_seconds_count{job="planetarium", status!="500"}[1h]))/sum(rate(http_server_requests_seconds_count{job="planetarium"}[1h])) < 0.998
+    labels:
+      severity: warn
+    annotations:
+      summary: "1hr success rate too low"
+      description: "Planetarium application is experiencing too many status 500 codes in a 1 hour range"
